@@ -176,12 +176,11 @@ jobs:
             echo "has-paths=$([ -n "$PATHS" ] && echo true || echo false)"
           } >> "$GITHUB_OUTPUT"
 
-      # Uploads run as separate non-blocking steps, so only scan failures and the severity gate fail the job.
       - name: Scan library
-        id: scan-library
         if: steps.scan-paths.outputs.has-paths == 'true'
         uses: ballerina-platform/scan-ballerina@v0.2.0
         with:
+          platforms: github-code-scanning
           ballerina-version: ${{ steps.resolve-scan.outputs.version }}
           paths: ${{ steps.scan-paths.outputs.paths }}
           category: bal-scan-library
@@ -189,32 +188,15 @@ jobs:
           exclude-tests: ${{ inputs.scan-exclude-tests }}
           artifacts: ${{ inputs.scan-artifacts }}
 
-      # Runs even when the gate fails, so the findings that failed it are still uploaded.
-      - name: Upload library scan results
-        if: ${{ !cancelled() && steps.scan-library.outputs.sarif-file != '' }}
-        continue-on-error: true
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: ${{ steps.scan-library.outputs.sarif-file }}
-          category: bal-scan-library
-
       # Runs even when the library gate fails, so examples findings are still reported.
       - name: Scan examples
-        id: scan-examples
         if: ${{ !cancelled() && inputs.scan-examples && steps.setup-ballerina.outcome == 'success' && hashFiles('examples/**') != '' }}
         uses: ballerina-platform/scan-ballerina@v0.2.0
         with:
+          platforms: github-code-scanning
           ballerina-version: ${{ steps.resolve-scan.outputs.version }}
           paths: examples
           category: bal-scan-examples
           fail-on-severity: medium
           exclude-tests: ${{ inputs.scan-exclude-tests }}
           artifacts: ${{ inputs.scan-artifacts }}
-
-      - name: Upload examples scan results
-        if: ${{ !cancelled() && steps.scan-examples.outputs.sarif-file != '' }}
-        continue-on-error: true
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: ${{ steps.scan-examples.outputs.sarif-file }}
-          category: bal-scan-examples
