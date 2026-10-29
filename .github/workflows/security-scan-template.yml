@@ -178,7 +178,7 @@ jobs:
 
       - name: Scan library
         if: steps.scan-paths.outputs.has-paths == 'true'
-        uses: ballerina-platform/scan-ballerina@v0.2.0
+        uses: ballerina-platform/scan-ballerina@v0
         with:
           platforms: github-code-scanning
           ballerina-version: ${{ steps.resolve-scan.outputs.version }}
@@ -191,7 +191,7 @@ jobs:
       # Runs even when the library gate fails, so examples findings are still reported.
       - name: Scan examples
         if: ${{ !cancelled() && inputs.scan-examples && steps.setup-ballerina.outcome == 'success' && hashFiles('examples/**') != '' }}
-        uses: ballerina-platform/scan-ballerina@v0.2.0
+        uses: ballerina-platform/scan-ballerina@v0
         with:
           platforms: github-code-scanning
           ballerina-version: ${{ steps.resolve-scan.outputs.version }}

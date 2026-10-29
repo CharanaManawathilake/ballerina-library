@@ -337,7 +337,7 @@ jobs:
 
             -   name: Scan library
                 if: steps.scan-paths.outputs.has-paths == 'true'
-                uses: ballerina-platform/scan-ballerina@v0.2.0
+                uses: ballerina-platform/scan-ballerina@v0
                 with:
                     platforms: github-code-scanning
                     ballerina-version: ${{ steps.resolve-scan.outputs.version }}
@@ -348,7 +348,7 @@ jobs:
 
             -   name: Scan examples
                 if: steps.resolve-scan.outputs.supported == 'true' && hashFiles('examples/**') != ''
-                uses: ballerina-platform/scan-ballerina@v0.2.0
+                uses: ballerina-platform/scan-ballerina@v0
                 with:
                     platforms: github-code-scanning
                     ballerina-version: ${{ steps.resolve-scan.outputs.version }}
